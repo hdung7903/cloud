@@ -1,0 +1,11 @@
+node_modules/
+*.log
+.env
+.env.local
+*.env
+dist/
+.DS_Store
+npm-debug.log*
+pnpm-lock.yaml
+package-lock.json
+
