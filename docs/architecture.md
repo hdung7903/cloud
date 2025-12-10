@@ -3,7 +3,7 @@ Architecture Overview
 
 Services
 --------
-- Backend API (Node.js + Hono/Express): auth, RBAC, file/folder CRUD, share links, presigned URLs, webhooks.
+- Backend API (Node.js + Express): auth, RBAC, file/folder CRUD, share links, presigned URLs, webhooks.
 - Worker (Node.js): scheduled cleanup (expired shares/files), async tasks (virus scan hook optional), cache invalidation.
 - Frontend (Vue 3 + Vite + Tailwind + shadcn-vue): SPA for browsing, upload, sharing.
 - MinIO: S3-compatible object storage for file blobs and thumbnails.
@@ -39,7 +39,7 @@ Security/ops notes
 
 Open decisions
 --------------
-- Choose Hono vs Express; pick Prisma vs Knex. (Default: Hono + Prisma).
+- Pick Prisma vs Knex. (Default: Prisma.)
 - Session strategy: JWT (access+refresh) vs server sessions in Redis.
 - Versioning support: keep latest only or maintain versions per file.
 

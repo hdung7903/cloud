@@ -15,7 +15,7 @@ Key features
 
 Tech decisions
 --------------
-- Backend: Node.js + Hono/Express (choose one; Hono suggested for simplicity) with @aws-sdk/client-s3 for MinIO, Prisma/Knex for MySQL, Redis client for caching.
+- Backend: Node.js + Express with @aws-sdk/client-s3 for MinIO, Prisma/Knex for MySQL, Redis client for caching.
 - Frontend: Vue 3 + Vite + Tailwind + shadcn-vue for UI kit.
 - Storage: MinIO for objects; MySQL for relational metadata; Redis for caching share link resolution and presigned URL throttling.
 - Infra: Docker Compose for local dev; separate services for backend API, worker, frontend, DB, Redis, MinIO.
