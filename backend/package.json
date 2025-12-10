@@ -10,7 +10,9 @@
     "worker": "ts-node-dev --respawn --transpile-only src/worker.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed": "ts-node-dev --transpile-only src/scripts/seed.ts"
+    "seed": "ts-node-dev --transpile-only src/scripts/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
@@ -38,9 +40,12 @@
     "@types/node": "^20.12.7",
     "@types/bcryptjs": "^2.4.6",
     "@types/uuid": "^9.0.7",
+    "@types/supertest": "^6.0.3",
     "prisma": "^5.20.0",
+    "supertest": "^7.0.0",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^2.1.2"
   }
 }
 
