@@ -15,30 +15,32 @@ Key features
 
 Tech decisions
 --------------
-- Backend: Node.js + Express with @aws-sdk/client-s3 for MinIO, Prisma/Knex for MySQL, Redis client for caching.
-- Frontend: Vue 3 + Vite + Tailwind + shadcn-vue for UI kit.
+- Backend: Node.js + Express + Prisma (MySQL), @aws-sdk/client-s3 for MinIO, Redis client for caching.
+- Frontend: Vue 3 + Vite + TypeScript + Pinia + Vue Router (scaffolded via `npm create vue@latest`).
 - Storage: MinIO for objects; MySQL for relational metadata; Redis for caching share link resolution and presigned URL throttling.
-- Infra: Docker Compose for local dev; separate services for backend API, worker, frontend, DB, Redis, MinIO.
+- Infra: Docker Compose for local dev; services: backend API, worker, frontend, DB, Redis, MinIO.
 
-Repo layout (proposed)
-----------------------
-- `backend/` – API, auth, file, share, RBAC modules.
-- `worker/` – background jobs (cleanup expired shares/files, lifecycle).
-- `frontend/` – Vue SPA for browsing/uploading/sharing.
+Repo layout
+-----------
+- `backend/` – API, auth, file, share, RBAC modules, Prisma schema, seed.
+- `frontend/` – Vue SPA (dev login + folder browser wired to backend).
 - `docs/` – architecture, API, DB schema notes.
 - `docker-compose.yml` – local stack (MySQL, Redis, MinIO, API, worker, frontend).
 
-Quick start (after code is added)
----------------------------------
-1) Copy `.env.example` → `.env` (fill secrets: DB, Redis, MinIO, OAuth).
-2) `docker compose up -d mysql redis minio` then `docker compose up backend worker frontend`.
-3) Run DB migrations (e.g., `npm run db:migrate` inside backend).
-4) Access frontend at http://localhost:5173, API at http://localhost:3000.
+Quick start (dev)
+-----------------
+1) Backend env: copy `backend/env.example` → `backend/.env` and adjust secrets (DB/Redis/MinIO/OAuth/JWT). Default compose URLs are prefilled.
+2) Start infra: `docker compose up -d mysql redis minio`.
+3) Backend deps: `cd backend && npm install`.
+4) DB migrate/seed: `npm run prisma:migrate -- --name init` (with DB up) then `npm run seed`.
+5) Run backend: `npm run dev` (or `docker compose up backend`).
+6) Frontend env: set `VITE_API_BASE_URL` (compose sets http://backend:3000). Locally: `cd frontend && npm install && npm run dev -- --host --port 5173`.
+7) Visit http://localhost:5173. Use Dev Login (email) → tokens stored in localStorage → browse/create folders (calls backend).
 
-Next steps
-----------
-- Pick Hono or Express for backend; wire auth (OAuth) and RBAC middleware.
-- Implement presigned upload/download with size/type validation and antivirus hook (optional).
-- Add tests for RBAC, share expiry, and object cleanup.
-- Harden: rate limit auth/share routes, audit logging, S3 bucket policies, CORS.
+Next steps / hardening
+----------------------
+- Finish OAuth providers beyond dev login; add refresh rotation + revoke list.
+- Add rate limiting (auth/share), audit logging, AV scan hook on upload, size/mime enforcement.
+- Implement worker cleanup (expired shares, orphan objects, soft-delete purge).
+- Add tests for RBAC, share expiry, and object lifecycle.
 

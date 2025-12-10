@@ -7,6 +7,7 @@ Auth
 - `GET /auth/oauth/:provider/callback` → issue JWT (access+refresh) or session cookie.
 - `POST /auth/refresh` → rotate tokens.
 - `POST /auth/logout` → revoke refresh/session.
+- `POST /auth/dev-login` → dev-only email login (creates user if missing, issues JWT/refresh).
 
 Folders
 -------
