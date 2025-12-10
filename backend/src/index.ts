@@ -3,19 +3,17 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 
 import authRouter from "./routes/auth.js";
 import fileRouter from "./routes/files.js";
 import folderRouter from "./routes/folders.js";
 import shareRouter from "./routes/shares.js";
 import adminRouter from "./routes/admin.js";
-
-dotenv.config();
+import { env } from "./config.js";
 
 const app = express();
-const port = Number(process.env.PORT) || 3000;
-const corsOrigin = process.env.CORS_ORIGIN?.split(",").map((x) => x.trim()) || "*";
+const port = env.PORT;
+const corsOrigin = env.CORS_ORIGIN.split(",").map((x) => x.trim());
 
 app.use(helmet());
 app.use(

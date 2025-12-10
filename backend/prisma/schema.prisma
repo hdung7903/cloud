@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        BigInt    @id @default(autoincrement())
+  email     String    @unique
+  name      String?
+  avatarUrl String?
+  status    String    @default("active")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  oauthAccounts OAuthAccount[]
+  roles         UserRole[]
+  folders       Folder[]
+  files         File[]
+  shares        Share[] @relation("ShareCreatedBy")
+}
+
+model OAuthAccount {
+  id                 BigInt   @id @default(autoincrement())
+  provider           String
+  providerAccountId  String
+  accessToken        String?
+  refreshToken       String?
+  expiresAt          DateTime?
+  user               User     @relation(fields: [userId], references: [id])
+  userId             BigInt
+
+  @@unique([provider, providerAccountId])
+}
+
+model Role {
+  id          BigInt    @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  userRoles   UserRole[]
+}
+
+model UserRole {
+  user   User @relation(fields: [userId], references: [id])
+  userId BigInt
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId BigInt
+
+  @@id([userId, roleId])
+}
+
+model Folder {
+  id         BigInt    @id @default(autoincrement())
+  name       String
+  parent     Folder?   @relation("FolderToFolder", fields: [parentId], references: [id])
+  parentId   BigInt?
+  children   Folder[]  @relation("FolderToFolder")
+  owner      User      @relation(fields: [ownerId], references: [id])
+  ownerId    BigInt
+  pathCache  String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  files      File[]
+  shares     Share[]   @relation("ShareFolder")
+
+  @@unique([parentId, name, deletedAt])
+}
+
+model File {
+  id         BigInt    @id @default(autoincrement())
+  folder     Folder    @relation(fields: [folderId], references: [id])
+  folderId   BigInt
+  owner      User      @relation(fields: [ownerId], references: [id])
+  ownerId    BigInt
+  name       String
+  mimeType   String
+  sizeBytes  BigInt
+  checksum   String
+  storageKey String
+  version    Int       @default(1)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  shares     Share[]   @relation("ShareFile")
+
+  @@unique([folderId, name, deletedAt])
+}
+
+model Share {
+  id            BigInt    @id @default(autoincrement())
+  resourceType  ShareResourceType
+  file          File?     @relation("ShareFile", fields: [fileId], references: [id])
+  fileId        BigInt?
+  folder        Folder?   @relation("ShareFolder", fields: [folderId], references: [id])
+  folderId      BigInt?
+  token         String    @unique
+  passwordHash  String?
+  expiresAt     DateTime?
+  allowDownload Boolean   @default(true)
+  allowPreview  Boolean   @default(true)
+  createdBy     User      @relation("ShareCreatedBy", fields: [createdById], references: [id])
+  createdById   BigInt
+  createdAt     DateTime  @default(now())
+  revokedAt     DateTime?
+}
+
+enum ShareResourceType {
+  file
+  folder
+}
+
